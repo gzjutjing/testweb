@@ -1,0 +1,16 @@
+gradlew
+gradlew.bat
+
+*.iml
+.idea/
+gradle/
+.gradle/
+.svn
+build/
+target
+.settings
+.project
+
+*.class
+
+*.log
