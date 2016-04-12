@@ -14,8 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = AutoConfig.class)
-
-public class TestService extends BaseTest {
+public class TestUtilsService extends BaseTestUtils {
 
     @Autowired
     private ITestService testService;
