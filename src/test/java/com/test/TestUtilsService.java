@@ -1,5 +1,7 @@
 package com.test;
 
+import com.test.aspect.DeclareParentsAspect;
+import com.test.service.IDeclareParentsTest;
 import com.test.service.ITestService;
 import configuration.AutoConfig;
 import org.junit.Assert;
@@ -25,9 +27,11 @@ public class TestUtilsService extends BaseTestUtils {
     }
 
     @Test
-    public void testProfileL1(){
-        Assert.assertEquals(testService.profileLevel1(),1);
-        logger.debug("l2={}",testService.profileLevel2());
+    public void testProfileL1() {
+        Assert.assertEquals(testService.profileLevel1(), 1);
+        logger.debug("l2={}", testService.profileLevel2());
         //Assert.assertEquals(testService.profileLevel2(),null);
+        ((IDeclareParentsTest)testService).showMe();
+
     }
 }
