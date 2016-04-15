@@ -1,9 +1,8 @@
 package com.test;
 
-import com.test.aspect.DeclareParentsAspect;
 import com.test.service.IDeclareParentsTest;
 import com.test.service.ITestService;
-import configuration.AutoConfig;
+import configuration.ServletConfig;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * Created by admin on 2016/4/11.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = AutoConfig.class)
+@ContextConfiguration(classes = ServletConfig.class)
 public class TestUtilsService extends BaseTestUtils {
 
     @Autowired

@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SpringBootTestController {
     private AtomicInteger i = new AtomicInteger();
 
-    @RequestMapping("/")
+    @RequestMapping("/boot")
     public String springBoot() {
         return i.incrementAndGet() + "aaaaaaaaaaaaa";
     }
