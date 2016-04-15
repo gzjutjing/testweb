@@ -8,5 +8,5 @@ import org.slf4j.LoggerFactory;
  * Created by admin on 2016/4/11.
  */
 public class BaseTestUtils {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 }
