@@ -3,16 +3,16 @@ package com.test.domain;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * Created by admin on 2016/4/15.
  */
 public class TestDomain {
-    @NotNull
+    @NotNull(message = "id不能为空")
     private Integer id;
-    @NotNull
-    @Min(value = 2,message = "{name.min.message}")
-    @Max(value = 6,message = "最长长度为6")
+    @NotNull(message = "name不能为空")
+    @Size(min= 2,max = 6,message = "{length.valid}")
     private String name;
 
     public Integer getId() {

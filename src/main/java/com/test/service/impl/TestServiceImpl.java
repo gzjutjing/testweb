@@ -28,4 +28,9 @@ public class TestServiceImpl implements ITestService {
     public List<TestDomain> getMockTestList(int size) {
         return null;
     }
+
+    @Override
+    public TestDomain getById(String id) {
+        return null;
+    }
 }

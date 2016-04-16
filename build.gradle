@@ -4,8 +4,8 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven { url 'http://maven.oschina.net/content/groups/public/' }
         maven { url "https://repo.spring.io/release" }
+        maven { url 'http://maven.oschina.net/content/groups/public/' }
     }
 
     dependencies {
@@ -15,15 +15,16 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'war'
+apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 sourceCompatibility = 1.8
 
 repositories {
-    maven { url 'http://maven.oschina.net/content/groups/public/' }
-    maven { url "https://repo.spring.io/release" }
     mavenLocal()
     mavenCentral()
+    maven { url "https://repo.spring.io/release" }
+    maven { url 'http://maven.oschina.net/content/groups/public/' }
 }
 
 dependencies {

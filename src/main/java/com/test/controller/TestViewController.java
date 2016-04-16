@@ -5,8 +5,14 @@ import com.test.service.ITestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +46,13 @@ public class TestViewController {
         return "mock1";
     }
 
+    @RequestMapping("/mock/{id}")
+    public String mockPath(@PathVariable String id, ModelMap modelMap) {
+        modelMap.put("id",id);
+        testService.getById(id);
+        return "mock2";
+    }
+
     private List<TestDomain> getList(int size) {
         List<TestDomain> l = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -49,5 +62,14 @@ public class TestViewController {
             l.add(t);
         }
         return l;
+    }
+
+    @RequestMapping(value = "/validTest",produces = "application/json;;charset=UTF-8")
+    @ResponseBody
+    public String validTest(@Valid TestDomain testDomain, Errors result){
+        if(result.hasErrors()){
+            return result.getAllErrors().get(0).getDefaultMessage();
+        }
+        return "ok";
     }
 }
