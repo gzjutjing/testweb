@@ -8,6 +8,7 @@ import org.mockito.Answers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -20,7 +21,10 @@ import org.springframework.web.servlet.view.velocity.VelocityView;
 import org.thymeleaf.spring4.view.ThymeleafView;
 
 import javax.xml.stream.events.Characters;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,7 +82,7 @@ public class TestTestViewController {
         ITestService testServiceMock = Mockito.mock(ITestService.class);
         Mockito.when(testServiceMock.getById("12345")).thenReturn(testDomain);
 
-        TestViewController t=new TestViewController();
+        TestViewController t = new TestViewController();
         t.setTestService(testServiceMock);
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(t)
                 .setSingleView(new InternalResourceView("mock2.html")).build();
@@ -86,17 +90,33 @@ public class TestTestViewController {
                 .andExpect(MockMvcResultMatchers.view().name("mock2"))
                 .andExpect(MockMvcResultMatchers.model().attribute("id", "12345"))
                 .andDo(MockMvcResultHandlers.print());
-        Mockito.verify(testServiceMock,Mockito.atLeastOnce()).getById("12345");
+        Mockito.verify(testServiceMock, Mockito.atLeastOnce()).getById("12345");
     }
 
     @Test
     public void testValidTest() throws Exception {
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new TestViewController()).build();
-        mockMvc.perform(MockMvcRequestBuilders.get("/validTest").param("id","1233").param("name","name").characterEncoding("utf-8").contentType(MediaType.APPLICATION_JSON_UTF8))
+        mockMvc.perform(MockMvcRequestBuilders.get("/validTest").param("id", "1233").param("name", "name").characterEncoding("utf-8").contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.content().string("ok"));
-        mockMvc.perform(MockMvcRequestBuilders.get("/validTest").param("id","1233").param("name","n").characterEncoding("utf-8").contentType(MediaType.APPLICATION_JSON_UTF8))
+        mockMvc.perform(MockMvcRequestBuilders.get("/validTest").param("id", "1233").param("name", "n").characterEncoding("utf-8").contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.content().string("长度必须在2和6之间"));
 
+    }
+
+    @Test
+    public void fileUp() throws Exception {
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new TestViewController()).build();
+        MockMultipartFile file = new MockMultipartFile("pic", new FileInputStream("C:\\Users\\admin\\Desktop\\2.png"));
+        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/fileUp").file(file).contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(MockMvcResultHandlers.print());
+
+        HashMap<String, String> contentTypeParams = new HashMap<String, String>();
+        contentTypeParams.put("boundary", "265001916915724");
+        MediaType mediaType = new MediaType("multipart", "form-data", contentTypeParams);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/fileUp")
+                .content(file.getBytes())
+                .contentType(mediaType));
     }
 }

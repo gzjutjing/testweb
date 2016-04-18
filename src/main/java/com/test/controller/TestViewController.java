@@ -7,12 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Part;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,5 +70,14 @@ public class TestViewController {
             return result.getAllErrors().get(0).getDefaultMessage();
         }
         return "ok";
+    }
+
+    @RequestMapping(value = "/fileUp",method = RequestMethod.POST)
+    public void fileUp(@RequestPart Part pic){
+        try {
+            pic.write("d:/"+pic.getSubmittedFileName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
