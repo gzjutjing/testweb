@@ -1,9 +1,7 @@
 package com.test.service;
 
 import com.test.BaseTestUtils;
-import com.test.service.IDeclareParentsTest;
-import com.test.service.ITestService;
-import configuration.ServletConfig;
+import configuration.RootConfig;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = ServletConfig.class)
+@ContextConfiguration(classes = RootConfig.class)
 public class TestUtilsService extends BaseTestUtils {
 
     @Autowired
