@@ -8,9 +8,15 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,10 +79,14 @@ public class TestViewController {
     }
 
     @RequestMapping(value = "/fileUp",method = RequestMethod.POST)
-    public void fileUp(@RequestPart Part pic){
+    @ResponseBody
+    public void fileUp(@RequestPart("file") MultipartFile file,HttpServletRequest request){
         try {
-            pic.write("d:/"+pic.getSubmittedFileName());
+            Part part=request.getPart("file");
+            file.transferTo(new File("d:/"+file.getOriginalFilename()));
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ServletException e) {
             e.printStackTrace();
         }
     }

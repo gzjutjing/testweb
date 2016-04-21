@@ -15,5 +15,6 @@ public class MyConditional implements Condition {
         Environment env = context.getEnvironment();
         System.out.println("================"+env.containsProperty("l1"));
         return env.containsProperty("l1");
+        //return true;
     }
 }

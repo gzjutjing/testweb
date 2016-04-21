@@ -4,7 +4,6 @@ import com.test.domain.TestDomain;
 import com.test.service.ITestService;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Answers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,16 +15,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceView;
-import org.springframework.web.servlet.view.velocity.VelocityLayoutView;
-import org.springframework.web.servlet.view.velocity.VelocityView;
-import org.thymeleaf.spring4.view.ThymeleafView;
 
-import javax.xml.stream.events.Characters;
-import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -107,16 +99,10 @@ public class TestTestViewController {
     @Test
     public void fileUp() throws Exception {
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new TestViewController()).build();
-        MockMultipartFile file = new MockMultipartFile("pic", new FileInputStream("C:\\Users\\admin\\Desktop\\2.png"));
-        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/fileUp").file(file).contentType(MediaType.MULTIPART_FORM_DATA))
+        MockMultipartFile file = new MockMultipartFile("file", "2.png", MediaType.MULTIPART_FORM_DATA.toString()
+                , new FileInputStream("C:\\Users\\admin\\Desktop\\2.png"));
+        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/fileUp").file(file))
                 .andDo(MockMvcResultHandlers.print());
 
-        HashMap<String, String> contentTypeParams = new HashMap<String, String>();
-        contentTypeParams.put("boundary", "265001916915724");
-        MediaType mediaType = new MediaType("multipart", "form-data", contentTypeParams);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/fileUp")
-                .content(file.getBytes())
-                .contentType(mediaType));
     }
 }
