@@ -4,11 +4,12 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 /**
  * Created by admin on 2016/4/15.
  */
-public class TestDomain {
+public class TestDomain implements Serializable {
     @NotNull(message = "id不能为空")
     private Integer id;
     @NotNull(message = "name不能为空")

@@ -3,6 +3,7 @@ package com.test.controller;
 import com.test.domain.TestDomain;
 import com.test.service.ITestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,8 @@ public class TestViewController {
 
     @Autowired
     private ITestService testService;
+    @Autowired
+    private JmsOperations jmsOperations;
 
     public ITestService getTestService() {
         return testService;
@@ -46,14 +49,14 @@ public class TestViewController {
 
     @RequestMapping("/mock")
     public String mock(ModelMap modelMap) {
-        modelMap.put("tt","tt1");
-        modelMap.put("mockList",getList(20));
+        modelMap.put("tt", "tt1");
+        modelMap.put("mockList", getList(20));
         return "mock1";
     }
 
     @RequestMapping("/mock/{id}")
     public String mockPath(@PathVariable String id, ModelMap modelMap) {
-        modelMap.put("id",id);
+        modelMap.put("id", id);
         testService.getById(id);
         return "mock2";
     }
@@ -69,25 +72,37 @@ public class TestViewController {
         return l;
     }
 
-    @RequestMapping(value = "/validTest",produces = "application/json;;charset=UTF-8")
+    @RequestMapping(value = "/validTest", produces = "application/json;;charset=UTF-8")
     @ResponseBody
-    public String validTest(@Valid TestDomain testDomain, Errors result){
-        if(result.hasErrors()){
+    public String validTest(@Valid TestDomain testDomain, Errors result) {
+        if (result.hasErrors()) {
             return result.getAllErrors().get(0).getDefaultMessage();
         }
         return "ok";
     }
 
-    @RequestMapping(value = "/fileUp",method = RequestMethod.POST)
+    @RequestMapping(value = "/fileUp", method = RequestMethod.POST)
     @ResponseBody
-    public void fileUp(@RequestPart("file") MultipartFile file,HttpServletRequest request){
+    public void fileUp(@RequestPart("file") MultipartFile file, HttpServletRequest request) {
         try {
-            Part part=request.getPart("file");
-            file.transferTo(new File("d:/"+file.getOriginalFilename()));
+            Part part = request.getPart("file");
+            file.transferTo(new File("d:/" + file.getOriginalFilename()));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ServletException e) {
             e.printStackTrace();
         }
+    }
+
+    @RequestMapping("/jms")
+    @ResponseBody
+    public String jms(ModelMap modelMap) {
+        TestDomain testDomain = new TestDomain();
+        testDomain.setName("jingjiong");
+        jmsOperations.convertAndSend("jing", testDomain);
+        System.out.println("---------------------send");
+        TestDomain t = (TestDomain) jmsOperations.receiveAndConvert("jing");
+        System.out.println(t.getName());
+        return "发送/接受ok！";
     }
 }
