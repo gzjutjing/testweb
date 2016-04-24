@@ -3,7 +3,13 @@ package configuration;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.destination.CachingDestinationResolver;
+import org.springframework.jms.support.destination.DestinationResolver;
+import org.springframework.jms.support.destination.DynamicDestinationResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
@@ -18,6 +24,7 @@ import javax.jms.ConnectionFactory;
 @Configuration
 @EnableAspectJAutoProxy
 @EnableWebMvc
+@EnableJms
 @ComponentScan(basePackages = "com.test")
 @PropertySource(value = "classpath:/config/config.properties")
 public class WebConfig {
@@ -65,5 +72,17 @@ public class WebConfig {
         conn.setTrustAllPackages(true);
         return conn;
     }
+/*
+    @Bean
+    public JmsListenerContainerFactory jmsListenerContainerFactory(){
+        DefaultJmsListenerContainerFactory d=new DefaultJmsListenerContainerFactory();
+        d.setConnectionFactory(connectionFactory());
+        return d;
+    }
+    @Bean
+    public DestinationResolver destinationResolver(){
+        return new DynamicDestinationResolver();
+    }
+*/
 
 }

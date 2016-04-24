@@ -101,8 +101,8 @@ public class TestViewController {
         testDomain.setName("jingjiong");
         jmsOperations.convertAndSend("jing", testDomain);
         System.out.println("---------------------send");
-        TestDomain t = (TestDomain) jmsOperations.receiveAndConvert("jing");
-        System.out.println(t.getName());
-        return "发送/接受ok！";
+//        TestDomain t = (TestDomain) jmsOperations.receiveAndConvert("jing");
+//        System.out.println(t.getName());
+        return "消息发送ok！";
     }
 }
