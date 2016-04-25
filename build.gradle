@@ -39,6 +39,9 @@ dependencies {
     compile 'javax.validation:validation-api:1.1.0.Final'
     compile 'org.hibernate:hibernate-validator:5.2.4.Final'
     compile 'org.thymeleaf:thymeleaf-spring4:2.1.2.RELEASE'
+    //db
+    compile 'org.mybatis:mybatis:3.4.0'
+    compile 'org.mybatis:mybatis-spring:1.3.0'
 
     //testCompile 'org.springframework.boot:spring-boot-starter-velocity:1.3.3.RELEASE'
     testCompile 'org.springframework.boot:spring-boot-starter-thymeleaf:1.3.3.RELEASE'
