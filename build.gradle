@@ -48,10 +48,12 @@ dependencies {
     compile 'org.thymeleaf:thymeleaf-spring4:2.1.2.RELEASE'
     compile('org.apache.activemq:activemq-client:5.13.2')
     //db
+    compile 'mysql:mysql-connector-java:5.1.38'
     compile 'org.mybatis:mybatis:3.4.0'
     compile 'org.mybatis:mybatis-spring:1.3.0'
     compile 'org.apache.commons:commons-dbcp2:2.1.1'
     compile 'org.springframework:spring-jdbc:4.2.5.RELEASE'
+    compile 'com.alibaba:druid:1.0.18'
 
     //testCompile 'org.springframework.boot:spring-boot-starter-velocity:1.3.3.RELEASE'
     testCompile 'org.springframework.boot:spring-boot-starter-thymeleaf:1.3.3.RELEASE'

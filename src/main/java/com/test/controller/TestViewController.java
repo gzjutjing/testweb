@@ -42,8 +42,9 @@ public class TestViewController {
     }
 
     @RequestMapping("/")
-    public String index(ModelMap modelMap) {
+    public String index(TestDomain testDomain,ModelMap modelMap) {
         modelMap.put("test", "test");
+        testDomain.setName("aaa");
         return "index";
     }
 
@@ -55,9 +56,10 @@ public class TestViewController {
     }
 
     @RequestMapping("/mock/{id}")
-    public String mockPath(@PathVariable String id, ModelMap modelMap) {
+    public String mockPath(@PathVariable Integer id, ModelMap modelMap) {
         modelMap.put("id", id);
-        testService.getById(id);
+        TestDomain testDomain=testService.getById(id);
+        System.out.println(testDomain.getName());
         return "mock2";
     }
 

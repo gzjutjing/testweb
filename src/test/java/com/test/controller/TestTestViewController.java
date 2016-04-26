@@ -72,7 +72,7 @@ public class TestTestViewController {
         testDomain.setName("1");
 
         ITestService testServiceMock = Mockito.mock(ITestService.class);
-        Mockito.when(testServiceMock.getById("12345")).thenReturn(testDomain);
+        Mockito.when(testServiceMock.getById(12345)).thenReturn(testDomain);
 
         TestViewController t = new TestViewController();
         t.setTestService(testServiceMock);
@@ -82,7 +82,7 @@ public class TestTestViewController {
                 .andExpect(MockMvcResultMatchers.view().name("mock2"))
                 .andExpect(MockMvcResultMatchers.model().attribute("id", "12345"))
                 .andDo(MockMvcResultHandlers.print());
-        Mockito.verify(testServiceMock, Mockito.atLeastOnce()).getById("12345");
+        Mockito.verify(testServiceMock, Mockito.atLeastOnce()).getById(12345);
     }
 
     @Test
