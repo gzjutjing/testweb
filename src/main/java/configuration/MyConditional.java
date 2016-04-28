@@ -14,7 +14,7 @@ public class MyConditional implements Condition {
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment env = context.getEnvironment();
         System.out.println("================"+env.containsProperty("l1"));
-        return env.containsProperty("l1");
-        //return true;
+        //return env.containsProperty("l1");
+        return true;
     }
 }

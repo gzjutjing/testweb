@@ -7,7 +7,6 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.destination.CachingDestinationResolver;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -26,7 +25,7 @@ import javax.jms.ConnectionFactory;
 @EnableWebMvc
 @EnableJms
 @ComponentScan(basePackages = "com.test")
-@PropertySource(value = "classpath:/config/config.properties")
+@Import({PropertiesConfig.class, DBConfig.class})
 public class WebConfig {
     @Value("${jms.server.url}")
     private String jmsServerUrl;
@@ -72,17 +71,18 @@ public class WebConfig {
         conn.setTrustAllPackages(true);
         return conn;
     }
-/*
+
     @Bean
-    public JmsListenerContainerFactory jmsListenerContainerFactory(){
-        DefaultJmsListenerContainerFactory d=new DefaultJmsListenerContainerFactory();
+    public JmsListenerContainerFactory jmsListenerContainerFactory() {
+        DefaultJmsListenerContainerFactory d = new DefaultJmsListenerContainerFactory();
         d.setConnectionFactory(connectionFactory());
         return d;
     }
+
     @Bean
-    public DestinationResolver destinationResolver(){
+    public DestinationResolver destinationResolver() {
         return new DynamicDestinationResolver();
     }
-*/
+
 
 }

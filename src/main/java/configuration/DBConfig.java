@@ -3,30 +3,42 @@ package configuration;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.hibernate.SessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
-import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jndi.JndiObjectFactoryBean;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Created by Administrator on 2016/4/25.
  */
 @Configuration
-@MapperScan("com.test.mapper")
-public class DataBaseConfiguration {
-
+@EnableTransactionManagement
+@Import({PropertiesConfig.class, MapperScannerConfig.class})
+public class DBConfig {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private Environment environment;
+
     @Value("${jdbc.url}")
     private String jdbcUrl;
     @Value("${jdbc.username}")
@@ -34,11 +46,14 @@ public class DataBaseConfiguration {
     @Value("${jdbc.password}")
     private String jdbcPassword;
 
-    @Profile("used")
-    @Bean(initMethod = "init", destroyMethod = "close")
-    public DataSource mysqlDataSource() throws SQLException {
-        logger.debug("配置datasource信息开始");
+    //------------------------------------------------------------------------------------------------------------------
+
+    @Profile("mysql")
+    @Bean(name = "dataSource", initMethod = "init", destroyMethod = "close")
+    public DataSource dataSource() throws SQLException {
+        logger.debug("----------配置datasource信息开始");
         DruidDataSource druidDataSource = new DruidDataSource();
+
         druidDataSource.setUrl(jdbcUrl);
         druidDataSource.setUsername(jdbcUsername);
         druidDataSource.setPassword(jdbcPassword);
@@ -63,23 +78,73 @@ public class DataBaseConfiguration {
         //清除无用连接的等待时间
         druidDataSource.setRemoveAbandonedTimeout(7200);
         druidDataSource.setFilters("stat");
-        logger.debug("配置datasource信息结束");
+        logger.debug("----------配置datasource信息结束");
         return druidDataSource;
     }
 
-    @Profile("used")
+    @Profile("mysql")
     @Bean
     public SqlSessionFactory sqlSessionFactory() throws Exception {
-        logger.debug("配置sqlSessionFactory信息开始");
+        logger.debug("----------配置sqlSessionFactory信息开始");
         SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
-        sqlSessionFactory.setDataSource(mysqlDataSource());
+        sqlSessionFactory.setDataSource(dataSource());
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         sqlSessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/*.xml"));
-        logger.debug("配置sqlSessionFactory信息结束");
+        logger.debug("----------配置sqlSessionFactory信息结束");
         return sqlSessionFactory.getObject();
     }
 
-    @Profile("dev")
+    //------------------------------------------------------------------------------------------------------------------
+    @Profile("hibernate")
+    @Bean
+    public LocalSessionFactoryBean sessionFactory() throws SQLException {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setDataSource(hibernateDataSource());
+        sessionFactory.setPackagesToScan(new String[]{"com.test.domain"});
+        sessionFactory.setHibernateProperties(hibernateProperties());
+        return sessionFactory;
+    }
+
+    @Profile("hibernate")
+    @Bean
+    public DataSource hibernateDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
+        dataSource.setUrl(environment.getRequiredProperty("jdbc.url"));
+        dataSource.setUsername(environment.getRequiredProperty("jdbc.username"));
+        dataSource.setPassword(environment.getRequiredProperty("jdbc.password"));
+        return dataSource;
+    }
+
+    private Properties hibernateProperties() {
+        Properties properties = new Properties();
+        properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
+        properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
+        properties.put("hibernate.format_sql", environment.getRequiredProperty("hibernate.format_sql"));
+        return properties;
+    }
+
+    @Profile("hibernate")
+    @Bean
+    @Autowired
+    public HibernateTransactionManager transactionManager(SessionFactory s) {
+        HibernateTransactionManager txManager = new HibernateTransactionManager();
+        txManager.setSessionFactory(s);
+        return txManager;
+    }
+
+    //////////////////////事务
+    /*@Profile("mysql")
+    @Bean
+    public DataSourceTransactionManager transactionManager(DataSource dataSource) {
+        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager();
+        transactionManager.setDataSource(dataSource);
+        return transactionManager;
+    }*/
+
+    //------------------------------------------------------------------------------------------------------------------
+    //其他
+    @Profile("dbcp")
     @Bean
     public DataSource dbcpDataSource() {
         BasicDataSource basicDataSource = new BasicDataSource();
@@ -92,7 +157,7 @@ public class DataBaseConfiguration {
         return basicDataSource;
     }
 
-    @Profile("test")
+    @Profile("jndi")
     @Bean
     public DataSource jndiDataSource() {
         JndiObjectFactoryBean jndi = new JndiObjectFactoryBean();
@@ -102,7 +167,7 @@ public class DataBaseConfiguration {
         return (DataSource) jndi.getObject();
     }
 
-    @Profile("spring")
+    @Profile("springDB")
     @Bean
     public DataSource embeddedDataSource() {
         EmbeddedDatabaseBuilder build = new EmbeddedDatabaseBuilder();
