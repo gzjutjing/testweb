@@ -10,6 +10,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -26,9 +28,18 @@ import javax.jms.ConnectionFactory;
 @EnableJms
 @ComponentScan(basePackages = "com.test")
 @Import({PropertiesConfig.class, DBConfig.class})
-public class WebConfig {
+public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${jms.server.url}")
     private String jmsServerUrl;
+    private static final String STATIC_RESOURCES_PRE = "classpath:";
+
+    //静态资源
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/");
+        registry.addResourceHandler("/js/**").addResourceLocations(STATIC_RESOURCES_PRE + "/statics/js/");
+        registry.addResourceHandler("/img/**").addResourceLocations(STATIC_RESOURCES_PRE + "/statics/img/");
+    }
 
     ///////////////////////////////////////////////////////////
     //spring boot 和tomcat容器同时启动共用
