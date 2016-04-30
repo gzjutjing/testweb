@@ -13,6 +13,7 @@ public interface ITestService {
     public float profileLevel2();
 
     public List<TestDomain> getMockTestList(int size);
+
     public TestDomain getById(Integer id);
 }
 

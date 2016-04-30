@@ -3,17 +3,15 @@ package com.test.controller;
 import com.test.domain.TestDomain;
 import com.test.service.ITestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.validation.Valid;
@@ -42,7 +40,7 @@ public class TestViewController {
     }
 
     @RequestMapping("/")
-    public String index(TestDomain testDomain,ModelMap modelMap) {
+    public String index(TestDomain testDomain, ModelMap modelMap) {
         modelMap.put("test", "test");
         testDomain.setName("aaa");
         return "index";
@@ -58,7 +56,7 @@ public class TestViewController {
     @RequestMapping("/mock/{id}")
     public String mockPath(@PathVariable Integer id, ModelMap modelMap) {
         modelMap.put("id", id);
-        TestDomain testDomain=testService.getById(id);
+        TestDomain testDomain = testService.getById(id);
         System.out.println(testDomain.getName());
         return "mock2";
     }
@@ -106,5 +104,16 @@ public class TestViewController {
 //        TestDomain t = (TestDomain) jmsOperations.receiveAndConvert("jing");
 //        System.out.println(t.getName());
         return "消息发送ok！";
+    }
+
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    @RequestMapping("/redis")
+    @ResponseBody
+    public String redis() {
+        //template.opsForValue().set("kj","king");
+        TestDomain testDomain = testService.getById(1);
+        return "ok";
     }
 }

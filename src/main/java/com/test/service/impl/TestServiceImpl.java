@@ -5,6 +5,7 @@ import com.test.mapper.ITestDomainDao;
 import com.test.service.ITestService;
 import configuration.MyConditional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,9 @@ public class TestServiceImpl implements ITestService {
     }
 
     @Override
+    @Cacheable(value = "ccccc",keyGenerator = "commonKeyGenerator")
     public TestDomain getById(Integer id) {
+        System.out.println("---------------------------------getbyid");
         return testDomainMapper.selectById(id);
     }
 }

@@ -27,7 +27,7 @@ import javax.jms.ConnectionFactory;
 @EnableWebMvc
 @EnableJms
 @ComponentScan(basePackages = "com.test")
-@Import({PropertiesConfig.class, DBConfig.class})
+@Import({PropertiesConfig.class, DBConfig.class, CacheConfig.class})
 public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${jms.server.url}")
     private String jmsServerUrl;
