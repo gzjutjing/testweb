@@ -1,5 +1,6 @@
 package com.test.service.impl;
 
+import com.test.annotation.AnnotationName;
 import com.test.domain.TestDomain;
 import com.test.mapper.ITestDomainDao;
 import com.test.service.ITestService;
@@ -40,5 +41,12 @@ public class TestServiceImpl implements ITestService {
     public TestDomain getById(Integer id) {
         System.out.println("---------------------------------getbyid");
         return testDomainMapper.selectById(id);
+    }
+
+    @Override
+    @AnnotationName()
+    public String modifyReturn(String name) {
+        System.out.println("========modifyReturn name="+name);
+        return name;
     }
 }

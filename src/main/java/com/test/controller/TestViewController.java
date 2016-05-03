@@ -116,4 +116,13 @@ public class TestViewController {
         TestDomain testDomain = testService.getById(1);
         return "ok";
     }
+
+    //////////////
+    @RequestMapping("/testaspect")
+    @ResponseBody
+    public String testaspect(){
+        String s= testService.modifyReturn("aaa");
+        System.out.println("----controller testaspect="+s);
+        return s;
+    }
 }

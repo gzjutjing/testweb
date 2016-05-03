@@ -15,5 +15,7 @@ public interface ITestService {
     public List<TestDomain> getMockTestList(int size);
 
     public TestDomain getById(Integer id);
+
+    public String modifyReturn(String name);
 }
 
