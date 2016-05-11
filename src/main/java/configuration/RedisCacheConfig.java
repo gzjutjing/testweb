@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
  */
 @Configuration
 @EnableCaching
-public class CacheConfig {
+public class RedisCacheConfig {
 
     @Autowired
     private Environment env;
