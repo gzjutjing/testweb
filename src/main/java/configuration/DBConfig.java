@@ -32,7 +32,7 @@ import java.util.Properties;
  */
 @Configuration
 @EnableTransactionManagement
-@Import({PropertiesConfig.class, MapperScannerConfig.class})
+@Import({MapperScannerConfig.class, DataSqlInitConfig.class})
 public class DBConfig {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 

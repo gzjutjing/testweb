@@ -1,0 +1,1 @@
+INSERT INTO `test`(user_id,name) VALUES (4,'zhangsan');
