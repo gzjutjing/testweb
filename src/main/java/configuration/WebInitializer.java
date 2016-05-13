@@ -2,7 +2,10 @@ package configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+import javax.servlet.Filter;
 
 /**
  * Created by admin on 2016/4/14.
@@ -18,7 +21,7 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
      */
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[]{WebConfig.class};
+        return null;
     }
 
     /**
@@ -32,7 +35,7 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
      */
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[]{RootConfig.class};
+        return new Class<?>[]{WebConfig.class};
     }
 
     /**
@@ -43,4 +46,13 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
     protected String[] getServletMappings() {
         return new String[]{"/"};
     }
+
+    @Override
+    protected Filter[] getServletFilters() {
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("UTF-8");
+
+        return new Filter[]{characterEncodingFilter};
+    }
+
 }
