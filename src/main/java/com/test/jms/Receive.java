@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class Receive {
-    @JmsListener(destination = "jing")
+    //@JmsListener(destination = "jing")
     public void test(Object o) {
         System.out.println("++++++"+o);
     }

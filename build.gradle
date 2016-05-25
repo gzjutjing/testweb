@@ -33,6 +33,7 @@ configurations.all {
 dependencies {
     compile 'commons-logging:commons-logging:1.2'
     compile('org.slf4j:slf4j-api:1.7.21')
+    compile('com.fasterxml.jackson.core:jackson-databind:2.6.6')
     compile('ch.qos.logback:logback-classic:1.1.7') { transitive = false }
     compile('ch.qos.logback:logback-core:1.1.7') { transitive = false }
     //spring
@@ -42,6 +43,9 @@ dependencies {
     runtime 'org.aspectj:aspectjweaver:1.8.9'
     compile 'org.springframework:spring-orm:4.2.5.RELEASE'
     compile 'org.springframework.data:spring-data-redis:1.7.1.RELEASE'
+    compile 'org.springframework.security:spring-security-core:4.1.0.RELEASE'
+    compile ('org.springframework.security:spring-security-web:4.1.0.RELEASE'){ transitive = false }
+    compile 'org.springframework.security:spring-security-config:4.1.0.RELEASE'
     //redis
     compile 'redis.clients:jedis:2.8.1'
 

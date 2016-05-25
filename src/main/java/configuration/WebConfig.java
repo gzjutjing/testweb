@@ -32,7 +32,7 @@ import java.util.List;
 @EnableWebMvc
 @EnableJms
 @ComponentScan(basePackages = "com.test")
-@Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class})
+@Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SecurityConfig.class})
 public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${jms.server.url}")
     private String jmsServerUrl;
