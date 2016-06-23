@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         logger.debug("--------------HttpSecurity initialize start--------");
-        http.authorizeRequests().antMatchers("/**").hasRole("admin");
+        http.authorizeRequests().antMatchers("/**").hasRole("user");
         //开启默认登录页面
         http.formLogin();
         //authenticated先后顺序不同会完全不同，如果放最前面会代表所有的都是已经认证的，放后面则会先匹配前面的，其它的不认证

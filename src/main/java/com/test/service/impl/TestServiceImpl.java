@@ -8,6 +8,7 @@ import configuration.MyConditional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,5 +49,18 @@ public class TestServiceImpl implements ITestService {
     public String modifyReturn(String name) {
         System.out.println("========modifyReturn name="+name);
         return name;
+    }
+
+    @Override
+    @Async
+    public String asyncTest() {
+        System.out.println("异步调用开始---------------------");
+        try {
+            Thread.sleep(1000*10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("异步调用结束---------------------");
+        return "异步数据返回";
     }
 }

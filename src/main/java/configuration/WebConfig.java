@@ -12,10 +12,11 @@ import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -30,7 +31,9 @@ import java.util.List;
 @Configuration
 @EnableAspectJAutoProxy
 @EnableWebMvc
+@EnableScheduling
 @EnableJms
+@EnableAsync
 @ComponentScan(basePackages = "com.test")
 @Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SecurityConfig.class})
 public class WebConfig extends WebMvcConfigurerAdapter {
@@ -38,12 +41,36 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     private String jmsServerUrl;
     private static final String STATIC_RESOURCES_PRE = "classpath:";
 
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+        super.configureAsyncSupport(configurer);
+        configurer.setDefaultTimeout(5 * 1000);
+        configurer.setTaskExecutor(threadPoolTaskExecutor());
+    }
+
+    @Bean
+    public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setMaxPoolSize(25);
+        //线程池维护线程的最少数量
+        taskExecutor.setCorePoolSize(10);
+        //线程池所使用的缓冲队列
+        taskExecutor.setQueueCapacity(100);
+        taskExecutor.initialize();
+        return taskExecutor;
+    }
+
     //静态资源
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/statics/**").addResourceLocations(STATIC_RESOURCES_PRE + "/statics/");
         registry.addResourceHandler("/js/**").addResourceLocations(STATIC_RESOURCES_PRE + "/statics/js/");
         registry.addResourceHandler("/img/**").addResourceLocations(STATIC_RESOURCES_PRE + "/statics/img/");
+    }
+
+    @Bean
+    public AsyncRestTemplate asyncRestTemplate() {
+        return new AsyncRestTemplate();
     }
 
     ///////////////////////////////////////////////////////////

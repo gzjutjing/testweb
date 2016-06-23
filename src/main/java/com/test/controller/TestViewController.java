@@ -5,10 +5,12 @@ import com.test.service.ITestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jms.core.JmsOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
@@ -19,6 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Created by admin on 2016/4/14.
@@ -120,9 +125,61 @@ public class TestViewController {
     //////////////
     @RequestMapping("/testaspect")
     @ResponseBody
-    public String testaspect(){
-        String s= testService.modifyReturn("aaa");
-        System.out.println("----controller testaspect="+s);
+    public String testaspect() {
+        String s = testService.modifyReturn("aaa");
+        System.out.println("----controller testaspect=" + s);
         return s;
+    }
+
+    ////////////////异步调用测试
+    @RequestMapping("/async")
+    @ResponseBody
+    public String async() {
+        String s = testService.asyncTest();
+        System.out.println(s);
+        return "async is ok";
+    }
+
+    @RequestMapping("/async/callable")
+    public Callable<String> callable(ModelMap map) {
+        System.out.println("thread nam=" + Thread.currentThread().getName());
+        return new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                System.out.println("yi bu shi yong ye mian");
+                System.out.println("thread nam=" + Thread.currentThread().getName());
+                Thread.sleep(1000 * 4);
+                map.put("key", "value");
+                return "asyncCallable";
+            }
+        };
+    }
+
+    Queue<DeferredResult<String>> defferQueue = new ConcurrentLinkedDeque<>();
+
+    //在异步处理完成时返回org.springframework.web.context.request.async.DeferredResult,其他线程，例如一个JMS或一个AMQP消息,Redis通知等等：
+    @RequestMapping("/async/deferred")
+    @ResponseBody
+    public DeferredResult<String> deferredResult() {
+        DeferredResult<String> deferredResult = new DeferredResult<>();
+        defferQueue.add(deferredResult);// Add deferredResult to a Queue or a Map...
+        return deferredResult;
+    }
+
+    // In some other thread...
+    //deferredResult.setResult(data);
+    // Remove deferredResult from the Queue or Map
+    @Scheduled(fixedRate = 2000)
+    public void defferSchedule() {
+        System.out.println("-------------2s schedule");
+        for (DeferredResult<String> result : this.defferQueue) {
+            result.setResult("jie果");
+            defferQueue.remove(result);
+        }
+    }
+
+    @Scheduled(fixedRate = 3000)
+    public void schedule() {
+        System.out.println("-------------3s schedule");
     }
 }

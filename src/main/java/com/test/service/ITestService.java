@@ -17,5 +17,7 @@ public interface ITestService {
     public TestDomain getById(Integer id);
 
     public String modifyReturn(String name);
+
+    public String asyncTest();
 }
 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+</head>
+<body>
+默认的页面数据 ，后台返回：<label th:text="${key}">ddd</label>
+<input type="button" value="aaa" id="aaa"/>
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script>
+    $(function () {
+        $("#aaa").bind("click",function(){
+            $.ajax({
+                url:"/async/deferred",
+                success:function(data){
+                    alert(data);
+                }
+            })
+        });
+    })
+</script>
+</body>
+
+</html>
