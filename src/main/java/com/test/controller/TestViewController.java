@@ -11,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.context.request.async.WebAsyncTask;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
@@ -155,6 +156,29 @@ public class TestViewController {
         };
     }
 
+    @RequestMapping("/async/callableException")
+    public Callable<String> callableException(ModelMap map) {
+        System.out.println("thread nam=" + Thread.currentThread().getName());
+        return new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                throw new IllegalStateException("Callable error");
+            }
+        };
+    }
+
+    @RequestMapping("/async/callWithCustomTimeout")
+    public WebAsyncTask<String> callWithCustomTimeout() {
+        Callable<String> callable = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                Thread.sleep(3000);
+                return "自定义超时";
+            }
+        };
+        return new WebAsyncTask<String>(1000, callable);
+    }
+
     Queue<DeferredResult<String>> defferQueue = new ConcurrentLinkedDeque<>();
 
     //在异步处理完成时返回org.springframework.web.context.request.async.DeferredResult,其他线程，例如一个JMS或一个AMQP消息,Redis通知等等：
@@ -178,8 +202,4 @@ public class TestViewController {
         }
     }
 
-    @Scheduled(fixedRate = 3000)
-    public void schedule() {
-        System.out.println("-------------3s schedule");
-    }
 }
