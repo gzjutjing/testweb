@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
  * Created by admin on 2016/4/30.
  */
 @Configuration
-@EnableCaching
+@EnableCaching(proxyTargetClass = true)
 public class RedisCacheConfig {
 
     @Autowired

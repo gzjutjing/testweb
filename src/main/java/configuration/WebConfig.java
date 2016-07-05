@@ -36,11 +36,38 @@ import java.util.List;
 @EnableAsync
 @ComponentScan(basePackages = "com.test")
 @Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SecurityConfig.class})
+//@ImportResource({"classpath*:config/dubbo-client.xml"})
 public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${jms.server.url}")
     private String jmsServerUrl;
     private static final String STATIC_RESOURCES_PRE = "classpath:";
 
+    //--------------rmi start
+    /*@Bean
+    public RmiProxyFactoryBean rmiProxyFactoryBean(){
+        RmiProxyFactoryBean bean=new RmiProxyFactoryBean();
+        bean.setServiceInterface(TestDubboService.class);
+        bean.setServiceUrl("rmi://127.0.0.1:9999/testRmi");
+        return bean;
+    }
+    //--------------rmi end
+    ///hessian
+    @Bean
+    public HessianProxyFactoryBean testHessian1Service(){
+        HessianProxyFactoryBean hessianProxyFactoryBean=new HessianProxyFactoryBean();
+        hessianProxyFactoryBean.setServiceInterface(TestHessian1Service.class);
+        hessianProxyFactoryBean.setServiceUrl("http://127.0.0.1:8080/testHessian1");
+        return hessianProxyFactoryBean;
+    }
+    @Bean
+    public HessianProxyFactoryBean testHessian2Service(){
+        HessianProxyFactoryBean hessianProxyFactoryBean=new HessianProxyFactoryBean();
+        hessianProxyFactoryBean.setServiceInterface(TestHessian2Service.class);
+        hessianProxyFactoryBean.setServiceUrl("http://127.0.0.1:8080/testHessian2");
+        return hessianProxyFactoryBean;
+    }*/
+    ///hessian
+    //--------------异步start
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         super.configureAsyncSupport(configurer);
@@ -59,6 +86,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         taskExecutor.initialize();
         return taskExecutor;
     }
+    //--------------异步over
 
     //静态资源
     @Override
@@ -87,10 +115,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         resolver.setSuffix(".html");
         resolver.setPrefix("/WEB-INF/classes/templates/");
         resolver.setTemplateMode("XHTML");
+        resolver.setCharacterEncoding("utf-8");
+        resolver.setCacheable(true);
+        resolver.setCacheTTLMs(10 * 1000l);//10秒
 
         //spring boot使用
         ClassLoaderTemplateResolver resolver1 = new ClassLoaderTemplateResolver();
         resolver1.setSuffix(".html");
+        resolver1.setCharacterEncoding("utf-8");
         resolver1.setPrefix("/");
 
         SpringTemplateEngine springTemplateEngine = new SpringTemplateEngine();
