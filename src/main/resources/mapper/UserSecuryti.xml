@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.test.mapper.IUserSecurityDao">
+    <resultMap id="result" type="com.test.domain.UserSecurity">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="pwd" property="pwd"/>
+        <result column="enabled" property="enabled"/>
+        <association property="menuList" column="id" select="selectByMenu"/>
+    </resultMap>
+    <resultMap id="selectMenu" type="com.test.domain.Menu">
+        <result column="cn_name" property="cn_name"/>
+        <result column="en_name" property="en_name"/>
+        <result column="url" property="url"/>
+    </resultMap>
+    <resultMap id="selectRoles" type="com.test.domain.Roles">
+        <result column="role_name" property="roleName"/>
+    </resultMap>
+
+
+    <select id="selectByUsername" resultMap="result">
+      SELECT * from user_security where username=#{username}
+    </select>
+    <select id="selectByMenu" resultMap="selectMenu">
+      SELECT  * from menu where id in(select menu_id from user_menu where user_id=#{value})
+    </select>
+
+    <select id="selectAuthority" resultMap="selectRoles">
+        SELECT * from user_security u,user_roles ur,roles r
+         where u.username=#{username} and u.id=ur.user_id and ur.roles_id=r.id
+    </select>
+</mapper>

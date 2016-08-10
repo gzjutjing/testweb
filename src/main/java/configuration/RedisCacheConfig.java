@@ -1,5 +1,8 @@
 package configuration;
 
+import configuration.jodis.JodisConnectionFactory;
+import configuration.jodis.JodisPool;
+import configuration.jodis.JodisPooledObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -11,7 +14,6 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.lang.reflect.Method;
@@ -33,6 +35,11 @@ public class RedisCacheConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
+        return jodisConnectionFactory();
+    }
+
+    //spring redis
+    private JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory connectionFactory = new JedisConnectionFactory();
         connectionFactory.setUsePool(true);
         connectionFactory.setHostName(env.getProperty("redis.host.name"));
@@ -48,6 +55,25 @@ public class RedisCacheConfig {
         return connectionFactory;
     }
 
+    //jodis
+    private JodisConnectionFactory jodisConnectionFactory() {
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        jedisPoolConfig.setMaxIdle(env.getProperty("redis.maxIdle", Integer.class, 10));
+        jedisPoolConfig.setMaxTotal(env.getProperty("redis.maxTotal", Integer.class, 100));
+        jedisPoolConfig.setMaxWaitMillis(env.getProperty("redis.maxWaitMillis", Long.class, 10000l));
+        jedisPoolConfig.setTestOnBorrow(env.getProperty("redis.testOnBorrow", Boolean.class, true));
+        ////////////////////////////
+        JodisPooledObjectFactory jodisPooledObjectFactory = new JodisPooledObjectFactory();
+        jodisPooledObjectFactory.setZkServers(env.getProperty("codis.zk.servers"));
+        jodisPooledObjectFactory.setZkCodisProxyDir(env.getProperty("codis.proxy.dir"));
+        jodisPooledObjectFactory.setCodisPassword(env.getProperty("codis.password"));
+        jodisPooledObjectFactory.init();
+        JodisPool pool = new JodisPool(jedisPoolConfig, jodisPooledObjectFactory);
+        JodisConnectionFactory connectionFactory = new JodisConnectionFactory();
+        connectionFactory.setPool(pool);
+        return connectionFactory;
+    }
+
     /*@Bean
     public StringRedisTemplate redisTemplate() {
         StringRedisTemplate template = new StringRedisTemplate();
@@ -56,8 +82,8 @@ public class RedisCacheConfig {
     }*/
 
     @Bean
-    public RedisTemplate redisTemplate(RedisConnectionFactory connectionFactory){
-        RedisTemplate redisTemplate=new RedisTemplate();
+    public RedisTemplate redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate redisTemplate = new RedisTemplate();
         redisTemplate.setConnectionFactory(connectionFactory);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;

@@ -2,7 +2,10 @@ package com.test.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -26,4 +29,16 @@ public class LoginController {
 //        System.out.println("---"+testHessian2Service.hessian2());
         return "login";
     }
+
+    @RequestMapping("/accessDeny")
+    public String accessDeny(ModelMap map) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String u = "";
+        if (principal instanceof UserDetails)
+            u = ((UserDetails) principal).getUsername();
+        else u = (String) principal;
+        map.put("user", u);
+        return "accessDeny";
+    }
+
 }

@@ -22,9 +22,9 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenLocal()
-    maven { url 'http://maven.oschina.net/content/groups/public/' }
     mavenCentral()
     maven { url "https://repo.spring.io/release" }
+    maven { url 'http://maven.oschina.net/content/groups/public/' }
     maven { url "http://localhost:8081/nexus/content/repositories/releases" }
 }
 configurations.all {
@@ -36,6 +36,7 @@ configurations.all {
 dependencies {
     compile 'com.test:testdubboapi:1.0.1'
     compile 'commons-logging:commons-logging:1.2'
+    compile 'org.apache.commons:commons-lang3:3.4'
     compile('org.slf4j:slf4j-api:1.7.21')
     compile('com.fasterxml.jackson.core:jackson-databind:2.6.6')
     compile('ch.qos.logback:logback-classic:1.1.7') { transitive = false }
@@ -52,12 +53,18 @@ dependencies {
     compile 'org.springframework.security:spring-security-config:4.1.0.RELEASE'
     //redis
     compile 'redis.clients:jedis:2.8.1'
+    compile("io.codis.jodis:jodis:0.3.1")
+    compile("com.google.guava:guava:19.0")
+    compile("com.alibaba:fastjson:1.2.14")
 
     compile("javax.jms:javax.jms-api:2.0.1")
     compile("javax.servlet:javax.servlet-api:3.1.0")
     compile 'javax.validation:validation-api:1.1.0.Final'
     compile('org.hibernate:hibernate-validator:5.2.4.Final')
-    compile 'org.thymeleaf:thymeleaf-spring4:2.1.2.RELEASE'
+    compile 'org.thymeleaf:thymeleaf:3.0.0.RELEASE'
+    compile 'org.thymeleaf:thymeleaf-spring4:3.0.0.RELEASE'
+    compile 'org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.0.RELEASE'
+
     compile('org.apache.activemq:activemq-client:5.13.2')
     //db
     compile 'org.hibernate:hibernate-core:5.1.0.Final'

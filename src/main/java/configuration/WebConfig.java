@@ -1,7 +1,9 @@
 package configuration;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -17,9 +19,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.servlet.config.annotation.*;
+import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.dialect.SpringStandardDialect;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.templateresolver.FileTemplateResolver;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import javax.jms.ConnectionFactory;
@@ -41,6 +47,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${jms.server.url}")
     private String jmsServerUrl;
     private static final String STATIC_RESOURCES_PRE = "classpath:";
+    @Autowired
+    private ApplicationContext applicationContext;
 
     //--------------rmi start
     /*@Bean
@@ -111,13 +119,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         //viewResolver.setExposeContextBeansAsAttributes(true);
         viewResolver.setCharacterEncoding("utf-8");
         //web容器
-        ServletContextTemplateResolver resolver = new ServletContextTemplateResolver();
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        resolver.setApplicationContext(applicationContext);
         resolver.setSuffix(".html");
         resolver.setPrefix("/WEB-INF/classes/templates/");
         resolver.setTemplateMode("XHTML");
         resolver.setCharacterEncoding("utf-8");
         resolver.setCacheable(true);
-        resolver.setCacheTTLMs(10 * 1000l);//10秒
+        resolver.setCacheTTLMs(1 * 1000l);//10秒
 
         //spring boot使用
         ClassLoaderTemplateResolver resolver1 = new ClassLoaderTemplateResolver();
@@ -128,6 +137,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         SpringTemplateEngine springTemplateEngine = new SpringTemplateEngine();
         springTemplateEngine.addTemplateResolver(resolver);
         springTemplateEngine.addTemplateResolver(resolver1);
+        //thymeleaf自动加载csrf hidden字段
+        springTemplateEngine.addDialect(new SpringSecurityDialect());
         viewResolver.setTemplateEngine(springTemplateEngine);
         return viewResolver;
     }

@@ -19,9 +19,9 @@ import java.io.IOException;
 public class AllExceptionHandler {
     Logger logger = LoggerFactory.getLogger(AllExceptionHandler.class);
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(Exception.class)
     public ModelAndView exceptionHandler(RuntimeException runtimeException, HttpServletRequest request, HttpServletResponse response) {
-        logger.error(runtimeException.getMessage());
+        logger.error(runtimeException.getMessage(), runtimeException);
         String xRequestedWith = request.getHeader("X-Requested-With");
         if (!StringUtils.isEmpty(xRequestedWith)) {
             try {
