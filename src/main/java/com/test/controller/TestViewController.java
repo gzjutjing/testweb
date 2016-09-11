@@ -49,6 +49,11 @@ public class TestViewController {
     public String index(TestDomain testDomain, ModelMap modelMap) {
         modelMap.put("test", "test");
         testDomain.setName("aaa");
+        try {
+            Thread.sleep(1000 * 4);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return "index";
     }
 
@@ -137,8 +142,8 @@ public class TestViewController {
     @ResponseBody
     public String async() {
         String s = testService.asyncTest();
-        System.out.println(s);
-        return "async is ok";
+        System.out.println("s==============="+s);
+        return "async is ok！s="+s;
     }
 
     @RequestMapping("/async/callable")
@@ -181,7 +186,8 @@ public class TestViewController {
 
     Queue<DeferredResult<String>> defferQueue = new ConcurrentLinkedDeque<>();
 
-    //在异步处理完成时返回org.springframework.web.context.request.async.DeferredResult,其他线程，例如一个JMS或一个AMQP消息,Redis通知等等：
+    //在异步处理完成时返回org.springframework.web.context.request.async.DeferredResult,
+    // 其他线程，例如定时任务或一个JMS或一个AMQP消息,Redis通知等等：
     @RequestMapping("/async/deferred")
     @ResponseBody
     public DeferredResult<String> deferredResult() {

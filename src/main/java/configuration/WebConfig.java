@@ -1,6 +1,9 @@
 package configuration;
 
+import com.test.exception.AsyncRejectException;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -21,15 +24,14 @@ import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.spring4.dialect.SpringStandardDialect;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.thymeleaf.templateresolver.FileTemplateResolver;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import javax.jms.ConnectionFactory;
 import java.util.List;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by admin on 2016/4/14.
@@ -41,9 +43,10 @@ import java.util.List;
 @EnableJms
 @EnableAsync
 @ComponentScan(basePackages = "com.test")
-@Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SecurityConfig.class})
+@Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class})//, SecurityConfig.class
 //@ImportResource({"classpath*:config/dubbo-client.xml"})
 public class WebConfig extends WebMvcConfigurerAdapter {
+    private Logger logger = LoggerFactory.getLogger(WebConfig.class);
     @Value("${jms.server.url}")
     private String jmsServerUrl;
     private static final String STATIC_RESOURCES_PRE = "classpath:";
@@ -86,11 +89,25 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setMaxPoolSize(25);
+        taskExecutor.setMaxPoolSize(200);
         //线程池维护线程的最少数量
         taskExecutor.setCorePoolSize(10);
         //线程池所使用的缓冲队列
-        taskExecutor.setQueueCapacity(100);
+        taskExecutor.setQueueCapacity(5000);
+        taskExecutor.setThreadNamePrefix("spring异步请求线程");
+        taskExecutor.setKeepAliveSeconds(5000);
+        //@TODO 此配置无效，max pool也无效，曹国core pool就挂了，后期处理
+        RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                logger.error("------------------------异步处理失败，重新执行-----------------------");
+                //打印线程池的对象
+                logger.debug("The pool RejectedExecutionHandler = "+executor.toString());
+                throw new AsyncRejectException();
+            }
+        };
+        //taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        taskExecutor.setRejectedExecutionHandler(rejectedExecutionHandler);
         taskExecutor.initialize();
         return taskExecutor;
     }

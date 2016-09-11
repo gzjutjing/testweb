@@ -35,7 +35,8 @@ public class RedisCacheConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return jodisConnectionFactory();
+        //return jodisConnectionFactory();
+        return jedisConnectionFactory();
     }
 
     //spring redis

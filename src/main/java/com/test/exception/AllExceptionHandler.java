@@ -44,4 +44,12 @@ public class AllExceptionHandler {
         System.out.println("---------------您没有权限访问---------------");
         return "您没有权限访问";
     }
+
+    @ExceptionHandler(AsyncRejectException.class)
+    public ModelAndView reject() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("msg", "线程过多，无法处理！");
+        modelAndView.setViewName("error");
+        return modelAndView;
+    }
 }
