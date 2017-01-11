@@ -1,6 +1,7 @@
 package com.test.utils.feign;
 
 import feign.Feign;
+import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 
 /**
@@ -11,6 +12,7 @@ import feign.jackson.JacksonEncoder;
 public class UserFeign {
     public int add() {
         FeignService searchHttpService = Feign.builder().encoder(new JacksonEncoder())
+                .errorDecoder(new FeignService.ServiceErrorDecoder(new JacksonDecoder()))
                 .logger(new feign.Logger.ErrorLogger()).logLevel(feign.Logger.Level.FULL)
                 .target(FeignService.class, "http://localhost:8080");
         int count = searchHttpService.add("yuan yang shu chu", 1, 3);
