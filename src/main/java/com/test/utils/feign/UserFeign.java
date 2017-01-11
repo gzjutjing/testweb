@@ -11,7 +11,7 @@ import feign.jackson.JacksonEncoder;
  */
 public class UserFeign {
     public int add() {
-        FeignService searchHttpService = Feign.builder().encoder(new JacksonEncoder())
+        FeignService searchHttpService = Feign.builder().encoder(new JacksonEncoder()).decoder(new JacksonDecoder())
                 .errorDecoder(new FeignService.ServiceErrorDecoder(new JacksonDecoder()))
                 .logger(new feign.Logger.ErrorLogger()).logLevel(feign.Logger.Level.FULL)
                 .target(FeignService.class, "http://localhost:8080");
