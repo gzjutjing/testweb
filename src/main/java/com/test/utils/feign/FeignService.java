@@ -16,6 +16,11 @@ import java.io.IOException;
  * Created by admin on 2017/1/11.
  */
 public interface FeignService {
+    //baidu测试
+    @RequestLine("GET /boot")
+    @Body("{params}")
+    String test(@Param("params") String params);
+
     /**
      * 只需要定义接口
      *
@@ -39,6 +44,7 @@ public interface FeignService {
         @Override
         public Exception decode(String methodKey, Response response) {
             try {
+                System.out.println("feign异常xianshi--------------------------------");
                 return (Exception) decoder.decode(response, Exception.class);
             } catch (IOException fallbackToDefault) {
                 return defaultDecoder.decode(methodKey, response);
