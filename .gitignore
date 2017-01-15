@@ -8,6 +8,7 @@ gradle/
 .gradle/
 .svn
 build/
+out/
 target
 .settings
 .project
