@@ -1,5 +1,9 @@
 package com.test.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Created by admin on 2016/6/29.
  */
 @Controller
+@Api(value = "登录")
 public class LoginController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 //    @Autowired
@@ -21,6 +26,7 @@ public class LoginController {
 //    @Autowired
 //    private TestHessian2Service testHessian2Service;
 
+    @ApiOperation(value = "登录接口", notes = "登录接口描述notes")
     @RequestMapping("/login")
     public String login() {
         logger.info("---login page---");
@@ -30,6 +36,10 @@ public class LoginController {
         return "login";
     }
 
+    @ApiOperation(value = "拒绝的接口", notes = "拒绝的接口note")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "参数map", name = "map")
+    })
     @RequestMapping("/accessDeny")
     public String accessDeny(ModelMap map) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
