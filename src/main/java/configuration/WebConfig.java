@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -42,6 +43,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableScheduling
 @EnableJms
 @EnableAsync
+@EnableJpaRepositories("com.test.mapper")
 @ComponentScan(basePackages = "com.test")
 @Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SwaggerConfig.class})//, SecurityConfig.class
 //@ImportResource({"classpath*:config/dubbo-client.xml"})
