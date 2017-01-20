@@ -43,7 +43,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableJms
 @EnableAsync
 @ComponentScan(basePackages = "com.test")
-@Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class})//, SecurityConfig.class
+@Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SwaggerConfig.class})//, SecurityConfig.class
 //@ImportResource({"classpath*:config/dubbo-client.xml"})
 public class WebConfig extends WebMvcConfigurerAdapter {
     private Logger logger = LoggerFactory.getLogger(WebConfig.class);
@@ -102,7 +102,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
                 logger.error("------------------------异步处理失败，重新执行-----------------------");
                 //打印线程池的对象
-                logger.debug("The pool RejectedExecutionHandler = "+executor.toString());
+                logger.debug("The pool RejectedExecutionHandler = " + executor.toString());
                 throw new AsyncRejectException();
             }
         };
@@ -112,6 +112,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return taskExecutor;
     }
     //--------------异步over
+
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+        configurer.enable();
+    }
 
     //静态资源
     @Override

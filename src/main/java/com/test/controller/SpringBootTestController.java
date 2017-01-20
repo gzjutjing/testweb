@@ -13,7 +13,7 @@ public class SpringBootTestController {
     private AtomicInteger i = new AtomicInteger();
 
     @RequestMapping("/boot")
-    public String springBoot() {
-        return i.incrementAndGet() + "aaaaaaaaaaaaa";
+    public String springBoot(String p) {
+        return i.incrementAndGet() + "aaaaaaaaaaaaa" + p;
     }
 }

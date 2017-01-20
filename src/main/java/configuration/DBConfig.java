@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -48,6 +49,12 @@ public class DBConfig {
 
     //------------------------------------------------------------------------------------------------------------------
 
+    @Bean
+    public JdbcTemplate jdbcTemplate() throws SQLException {
+        JdbcTemplate jdbcTemplate=new JdbcTemplate();
+        jdbcTemplate.setDataSource(dataSource());
+        return jdbcTemplate;
+    }
     @Profile("mysql")
     @Bean(name = "dataSource", initMethod = "init", destroyMethod = "close")
     public DataSource dataSource() throws SQLException {
