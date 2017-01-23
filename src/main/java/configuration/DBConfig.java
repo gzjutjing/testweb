@@ -85,7 +85,7 @@ public class DBConfig {
         map.put("hibernate.hbm2ddl.auto", "update");
         map.put("hibernate.schemaUpdate", true);//不配置的话数据库不会更新
         bean.setJpaPropertyMap(map);
-        bean.afterPropertiesSet();
+        bean.afterPropertiesSet();//不可以少，不然会nullpoint
         return bean.getObject();
     }
 
