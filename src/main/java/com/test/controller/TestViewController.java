@@ -201,7 +201,7 @@ public class TestViewController {
     // Remove deferredResult from the Queue or Map
     @Scheduled(fixedRate = 2000)
     public void defferSchedule() {
-        System.out.println("-------------2s schedule");
+        System.out.println("-------------testViewController 2s schedule");
         for (DeferredResult<String> result : this.defferQueue) {
             result.setResult("jie果");
             defferQueue.remove(result);

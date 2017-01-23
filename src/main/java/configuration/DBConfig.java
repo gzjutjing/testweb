@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -22,12 +24,18 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -35,6 +43,7 @@ import java.util.Properties;
  */
 @Configuration
 @EnableTransactionManagement
+@EnableJpaRepositories(basePackages = "com.test.jpa")
 @Import({MapperScannerConfig.class, DataSqlInitConfig.class})
 public class DBConfig {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -49,16 +58,59 @@ public class DBConfig {
     @Value("${jdbc.password}")
     private String jdbcPassword;
 
-    //------------------------------------------------------------------------------------------------------------------
+    //jpa start----------------------------------------------------------------------------------------------------------
+
+    /**
+     * JPA 实体管理工厂
+     */
+    @Bean
+    public EntityManagerFactory entityManagerFactory() throws SQLException {
+        LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
+        bean.setDataSource(dataSource());
+        bean.setJpaDialect(new HibernateJpaDialect());
+        //bean.setPersistenceProvider(new hibernateper);
+        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        adapter.setDatabase(Database.MYSQL);
+        adapter.setShowSql(true);
+        adapter.setGenerateDdl(true);
+        adapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
+        bean.setJpaVendorAdapter(adapter);
+        bean.setPackagesToScan("com.test.domain");
+        Map<String, Object> map = new HashMap<>();
+        map.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        map.put("hibernate.ejb.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
+//        map.put("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
+        map.put("hibernate.show_sql", "true");
+        map.put("hibernate.format_sql", "true");
+        map.put("hibernate.hbm2ddl.auto", "update");
+        map.put("hibernate.schemaUpdate", true);//不配置的话数据库不会更新
+        bean.setJpaPropertyMap(map);
+        bean.afterPropertiesSet();
+        return bean.getObject();
+    }
+
+    /**
+     * JPA 事物处理
+     */
+    @Bean(name = "jpaTransactionManager")
+    public JpaTransactionManager jpaTransactionManager() throws SQLException {
+        JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+        jpaTransactionManager.setEntityManagerFactory(entityManagerFactory());
+        return jpaTransactionManager;
+    }
+
+    /**
+     * 事物异常处理
+     */
+    @Bean
+    public PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor() {
+        return new PersistenceExceptionTranslationPostProcessor();
+    }
+    //jpa end-----------------------------------------------------------------------------------------------------------
 
     @Bean
-    public EntityManagerFactory entityManagerFactory(){
-        LocalContainerEntityManagerFactoryBean bean=new LocalContainerEntityManagerFactoryBean();
-        return bean;
-    }
-    @Bean
     public JdbcTemplate jdbcTemplate() throws SQLException {
-        JdbcTemplate jdbcTemplate=new JdbcTemplate();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
         jdbcTemplate.setDataSource(dataSource());
         return jdbcTemplate;
     }

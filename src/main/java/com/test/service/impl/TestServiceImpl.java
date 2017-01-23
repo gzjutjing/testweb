@@ -2,6 +2,7 @@ package com.test.service.impl;
 
 import com.test.annotation.AnnotationName;
 import com.test.domain.TestDomain;
+import com.test.jpa.ITestDomainJpaDao;
 import com.test.mapper.ITestDomainDao;
 import com.test.service.ITestService;
 import configuration.MyConditional;
@@ -24,6 +25,8 @@ public class TestServiceImpl implements ITestService {
     private ITestDomainDao testDomainMapper;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ITestDomainJpaDao testDomainJpaDao;
 
     @Override
     public int profileLevel1() {
@@ -49,7 +52,7 @@ public class TestServiceImpl implements ITestService {
             System.out.println(k + "----" + v);
         });*/
         System.out.println(map.size());
-        System.out.println(testDomainMapper.findByName("11").getName());
+        System.out.println("----"+testDomainJpaDao.findByName("11"));
         return testDomainMapper.selectById(id);
     }
 

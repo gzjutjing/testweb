@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -18,6 +17,7 @@ import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -43,7 +43,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableScheduling
 @EnableJms
 @EnableAsync
-@EnableJpaRepositories("com.test.mapper")
 @ComponentScan(basePackages = "com.test")
 @Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SwaggerConfig.class})//, SecurityConfig.class
 //@ImportResource({"classpath*:config/dubbo-client.xml"})
@@ -115,17 +114,22 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
     //--------------异步over
 
-    @Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
-    }
-
     //静态资源
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/statics/**").addResourceLocations(STATIC_RESOURCES_PRE + "/statics/");
         registry.addResourceHandler("/js/**").addResourceLocations(STATIC_RESOURCES_PRE + "/statics/js/");
         registry.addResourceHandler("/img/**").addResourceLocations(STATIC_RESOURCES_PRE + "/statics/img/");
+    }
+
+    /**
+     * 服务器默认Servlet 来处理静态资源。DispatcherServlet 我们设置了拦截所以，所以在找静态资源的选择让default 去做。
+     *
+     * @param configurer
+     */
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+        configurer.enable();
     }
 
     @Bean
@@ -196,7 +200,16 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        super.addInterceptors(registry);
+        registry.addWebRequestInterceptor(openEntityManagerInViewInterceptor());
+    }
+
+    /**
+     * 使用JPA  懒加载数据容易出现 no session 问题，可以加这个拦截器，
+     * 相对使用Filter 来说， 这个数据库事物是在找到相应的处理者之后才会打开
+     */
+    @Bean
+    public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+        return new OpenEntityManagerInViewInterceptor();
     }
 
     @Override
