@@ -22,10 +22,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -52,13 +50,8 @@ public class DBConfig {
     //------------------------------------------------------------------------------------------------------------------
 
     @Bean
-    public EntityManagerFactory entityManagerFactory(){
-        LocalContainerEntityManagerFactoryBean bean=new LocalContainerEntityManagerFactoryBean();
-        return bean;
-    }
-    @Bean
     public JdbcTemplate jdbcTemplate() throws SQLException {
-        JdbcTemplate jdbcTemplate=new JdbcTemplate();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
         jdbcTemplate.setDataSource(dataSource());
         return jdbcTemplate;
     }

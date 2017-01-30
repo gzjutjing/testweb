@@ -1,11 +1,9 @@
 package configuration;
 
 import com.test.exception.AsyncRejectException;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -13,11 +11,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.config.JmsListenerContainerFactory;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.destination.DestinationResolver;
-import org.springframework.jms.support.destination.DynamicDestinationResolver;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -29,7 +22,6 @@ import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import javax.jms.ConnectionFactory;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -45,12 +37,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 @EnableJpaRepositories("com.test.mapper")
 @ComponentScan(basePackages = "com.test")
-@Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SwaggerConfig.class})//, SecurityConfig.class
+@Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SwaggerConfig.class, RabbitMqConfig.class})
+//, SecurityConfig.class
 //@ImportResource({"classpath*:config/dubbo-client.xml"})
 public class WebConfig extends WebMvcConfigurerAdapter {
     private Logger logger = LoggerFactory.getLogger(WebConfig.class);
-    @Value("${jms.server.url}")
-    private String jmsServerUrl;
+
     private static final String STATIC_RESOURCES_PRE = "classpath:";
     @Autowired
     private ApplicationContext applicationContext;
@@ -165,33 +157,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         springTemplateEngine.addDialect(new SpringSecurityDialect());
         viewResolver.setTemplateEngine(springTemplateEngine);
         return viewResolver;
-    }
-
-    /////////////////////////////////////////////////消息
-    @Bean
-    public JmsTemplate jmsTemplate() {
-        JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory());
-        jmsTemplate.setDefaultDestinationName("spitter.queue");
-        return jmsTemplate;
-    }
-
-    @Bean
-    public ConnectionFactory connectionFactory() {
-        ActiveMQConnectionFactory conn = new ActiveMQConnectionFactory(jmsServerUrl);
-        conn.setTrustAllPackages(true);
-        return conn;
-    }
-
-    @Bean
-    public JmsListenerContainerFactory jmsListenerContainerFactory() {
-        DefaultJmsListenerContainerFactory d = new DefaultJmsListenerContainerFactory();
-        d.setConnectionFactory(connectionFactory());
-        return d;
-    }
-
-    @Bean
-    public DestinationResolver destinationResolver() {
-        return new DynamicDestinationResolver();
     }
 
     @Override
