@@ -4,6 +4,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -17,6 +18,7 @@ import javax.jms.ConnectionFactory;
  * Created by admin on 2017/1/30.
  */
 @Configuration
+@EnableJms
 public class ActiveMQConfig {
     @Value("${jms.server.url}")
     private String jmsServerUrl;

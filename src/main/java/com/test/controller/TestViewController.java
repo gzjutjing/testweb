@@ -34,8 +34,8 @@ public class TestViewController {
 
     @Autowired
     private ITestService testService;
-    @Autowired
-    private JmsOperations jmsOperations;
+    //@Autowired
+    //private JmsOperations jmsOperations;
 
     public ITestService getTestService() {
         return testService;
@@ -104,7 +104,7 @@ public class TestViewController {
             e.printStackTrace();
         }
     }
-
+/*
     @RequestMapping("/jms")
     @ResponseBody
     public String jms(ModelMap modelMap) {
@@ -115,7 +115,7 @@ public class TestViewController {
 //        TestDomain t = (TestDomain) jmsOperations.receiveAndConvert("jing");
 //        System.out.println(t.getName());
         return "消息发送ok！";
-    }
+    }*/
 
     @Autowired
     RedisTemplate redisTemplate;

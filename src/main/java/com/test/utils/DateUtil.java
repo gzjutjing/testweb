@@ -1,5 +1,7 @@
 package com.test.utils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
@@ -18,7 +20,8 @@ public class DateUtil {
      * @return
      */
     public static String defaultFormat(Date date) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DEFAULT_FORMAT, Locale.getDefault());
-        return formatter.format(date.toInstant());
+        return formatter.format(localDateTime);
     }
 }

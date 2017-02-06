@@ -32,7 +32,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAspectJAutoProxy
 @EnableWebMvc
 @EnableScheduling
-@EnableJms
 @EnableAsync
 @ComponentScan(basePackages = "com.test")
 @Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SwaggerConfig.class, RabbitMqConfig.class})
