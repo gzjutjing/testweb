@@ -14,6 +14,7 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.lang.reflect.Method;
@@ -90,6 +91,21 @@ public class RedisCacheConfig {
         return redisTemplate;
     }
 
+    /**
+     * 基于redis的分布式计数器，全局唯一
+     *
+     * @return
+     */
+    @Bean
+    public RedisAtomicLong redisAtomicLong() {
+        return new RedisAtomicLong("redisCounter", redisConnectionFactory());
+    }
+
+    /**
+     * 用redis做cache时key的生成策略
+     *
+     * @return
+     */
     @Bean
     public KeyGenerator commonKeyGenerator() {
         return new KeyGenerator() {
