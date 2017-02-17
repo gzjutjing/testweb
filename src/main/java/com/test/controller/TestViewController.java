@@ -117,7 +117,7 @@ public class TestViewController {
         return "消息发送ok！";
     }*/
 
-    @Autowired
+    //@Autowired
     RedisTemplate redisTemplate;
 
     @RequestMapping("/redis")

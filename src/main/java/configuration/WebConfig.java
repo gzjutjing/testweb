@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableScheduling
 @EnableAsync
 @ComponentScan(basePackages = "com.test")
-@Import({PropertiesConfig.class, DBConfig.class, RedisCacheConfig.class, SwaggerConfig.class, RabbitMqConfig.class})
+@Import({PropertiesConfig.class, DBConfig.class,  SwaggerConfig.class, RabbitMqConfig.class})//RedisCacheConfig.class,
 //, SecurityConfig.class
 //@ImportResource({"classpath*:config/dubbo-client.xml"})
 public class WebConfig extends WebMvcConfigurerAdapter {

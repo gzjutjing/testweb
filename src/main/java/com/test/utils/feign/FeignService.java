@@ -1,9 +1,7 @@
 package com.test.utils.feign;
 
-import feign.Body;
-import feign.Param;
-import feign.RequestLine;
-import feign.Response;
+import com.test.controller.ExpressReturn;
+import feign.*;
 import feign.codec.Decoder;
 import feign.codec.ErrorDecoder;
 
@@ -32,6 +30,16 @@ public interface FeignService {
     @RequestLine("GET /additional?a={a}&b={b}")
     @Body("{params}")
     int add(@Param("params") String params, @Param("a") Integer a, @Param("b") Integer b);
+
+    /**
+     * header必须加上content-type
+     *
+     * @param expressReturn
+     * @return
+     */
+    @RequestLine("POST /testFeign2")
+    @Headers("Content-Type: application/json")
+    ExpressReturn objectTest(ExpressReturn expressReturn);
 
     static class ServiceErrorDecoder implements ErrorDecoder {
         final Decoder decoder;
