@@ -28,6 +28,8 @@ public class FeignServiceImpl implements FeignService {
      */
     @Override
     public ExpressReturn objectTest(ExpressReturn expressReturn) {
-        return new ExpressReturn();
+        System.out.println("----------------------------------------------------------");
+        System.out.println("使用默认容错数据");
+        return expressReturn;
     }
 }
