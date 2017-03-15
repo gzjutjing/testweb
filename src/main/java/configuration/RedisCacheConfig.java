@@ -14,10 +14,15 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.support.atomic.RedisAtomicLong;
+import org.springframework.util.ClassUtils;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 
 /**
  * Created by admin on 2016/4/30.
@@ -87,6 +92,11 @@ public class RedisCacheConfig {
     public RedisTemplate redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate redisTemplate = new RedisTemplate();
         redisTemplate.setConnectionFactory(connectionFactory);
+        RedisSerializer stringSerializer = new StringRedisSerializer();
+        redisTemplate.setKeySerializer(stringSerializer);
+        redisTemplate.setValueSerializer(stringSerializer);
+        redisTemplate.setHashKeySerializer(stringSerializer);
+        redisTemplate.setHashValueSerializer(stringSerializer);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
@@ -109,15 +119,42 @@ public class RedisCacheConfig {
     @Bean
     public KeyGenerator commonKeyGenerator() {
         return new KeyGenerator() {
+            // custom cache key
+            public static final int NO_PARAM_KEY = 0;
+            public static final int NULL_PARAM_KEY = 53;
+
             @Override
             public Object generate(Object target, Method method, Object... params) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(target.getClass().getName());
-                sb.append(method.getName());
-                for (Object p : params) {
-                    sb.append(p);
+
+                StringBuilder key = new StringBuilder();
+                key.append(target.getClass().getSimpleName()).append(".").append(method.getName()).append(":");
+                if (params.length == 0) {
+                    return key.append(NO_PARAM_KEY).toString();
                 }
-                return sb.toString();
+                for (Object param : params) {
+                    if (param == null) {
+                        //log.warn("input null param for Spring cache, use default key={}", NULL_PARAM_KEY);
+                        key.append(NULL_PARAM_KEY);
+                    } else if (org.springframework.util.ClassUtils.isPrimitiveArray(param.getClass())) {
+                        int length = Array.getLength(param);
+                        for (int i = 0; i < length; i++) {
+                            key.append(Array.get(param, i));
+                            key.append(',');
+                        }
+                    } else if (ClassUtils.isPrimitiveOrWrapper(param.getClass()) || param instanceof String) {
+                        key.append(param);
+                    } else {
+//                        log.warn("Using an object as a cache key may lead to unexpected results. " +
+//                                "Either use @Cacheable(key=..) or implement CacheKey. Method is " + target.getClass() + "#" + method.getName());
+                        key.append(param.hashCode());
+                    }
+                    key.append('-');
+                }
+
+                String finalKey = key.toString();
+                long cacheKeyHash = com.google.common.hash.Hashing.murmur3_128().hashString(finalKey, Charset.defaultCharset()).asLong();
+                //log.debug("using cache key={} hashCode={}", finalKey, cacheKeyHash);
+                return key.toString();
             }
         };
     }
